@@ -39,9 +39,10 @@ enum TileLayerTypes {
 };
 
 enum StageModes {
-    STAGEMODE_LOAD   = 0,
-    STAGEMODE_NORMAL = 1,
-    STAGEMODE_PAUSED = 2,
+    STAGEMODE_LOAD          = 0,
+    STAGEMODE_NORMAL        = 1,
+    STAGEMODE_PAUSED        = 2,
+    STAGEMODE_PAUSED_HARD   = 3
 };
 
 enum TileInfo {
@@ -155,6 +156,7 @@ extern int lastXSize;
 extern int lastYSize;
 
 extern bool pauseEnabled;
+extern bool softPauseEnabled;
 extern bool timeEnabled;
 extern bool debugMode;
 extern int frameCounter;

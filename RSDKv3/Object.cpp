@@ -47,42 +47,50 @@ void ProcessStartupObjects()
     curObjectType = 0;
 }
 
+bool CalcObjectActiveState(Entity *entity) {
+    bool active = false;
+    int x = 0, y = 0;
+
+    switch (entity->priority) {
+        case PRIORITY_ACTIVE_BOUNDS:
+            x      = entity->XPos >> 16;
+            y      = entity->YPos >> 16;
+            active = x > xScrollOffset - OBJECT_BORDER_X1 && x < OBJECT_BORDER_X2 + xScrollOffset && y > yScrollOffset - OBJECT_BORDER_Y1
+                     && y < yScrollOffset + OBJECT_BORDER_Y2;
+            break;
+        case PRIORITY_ACTIVE: active = true; break;
+        case PRIORITY_ACTIVE_PAUSED: active = true; break;
+        case PRIORITY_ACTIVE_XBOUNDS:
+            x      = entity->XPos >> 16;
+            active = x > xScrollOffset - OBJECT_BORDER_X1 && x < OBJECT_BORDER_X2 + xScrollOffset;
+            break;
+        case PRIORITY_ACTIVE_BOUNDS_REMOVE:
+            x = entity->XPos >> 16;
+            y = entity->YPos >> 16;
+            if (x <= xScrollOffset - OBJECT_BORDER_X1 || x >= OBJECT_BORDER_X2 + xScrollOffset || y <= yScrollOffset - OBJECT_BORDER_Y1
+                || y >= yScrollOffset + OBJECT_BORDER_Y2) {
+                active       = false;
+                entity->type = OBJ_TYPE_BLANKOBJECT;
+            }
+            else {
+                active = true;
+            }
+            break;
+        case PRIORITY_INACTIVE: active = false; break;
+        default: break;
+    }
+
+    return active;
+}
+
 void ProcessObjects()
 {
     for (int i = 0; i < DRAWLAYER_COUNT; ++i) drawListEntries[i].listSize = 0;
 
     for (objectLoop = 0; objectLoop < ENTITY_COUNT; ++objectLoop) {
-        bool active = false;
-        int x = 0, y = 0;
         Entity *entity = &objectEntityList[objectLoop];
-        switch (entity->priority) {
-            case PRIORITY_ACTIVE_BOUNDS:
-                x      = entity->XPos >> 16;
-                y      = entity->YPos >> 16;
-                active = x > xScrollOffset - OBJECT_BORDER_X1 && x < OBJECT_BORDER_X2 + xScrollOffset
-                         && y > yScrollOffset - OBJECT_BORDER_Y1 && y < yScrollOffset + OBJECT_BORDER_Y2;
-                break;
-            case PRIORITY_ACTIVE: active = true; break;
-            case PRIORITY_ACTIVE_PAUSED: active = true; break;
-            case PRIORITY_ACTIVE_XBOUNDS:
-                x      = entity->XPos >> 16;
-                active = x > xScrollOffset - OBJECT_BORDER_X1 && x < OBJECT_BORDER_X2 + xScrollOffset;
-                break;
-            case PRIORITY_ACTIVE_BOUNDS_REMOVE:
-                x = entity->XPos >> 16;
-                y = entity->YPos >> 16;
-                if (x <= xScrollOffset - OBJECT_BORDER_X1 || x >= OBJECT_BORDER_X2 + xScrollOffset
-                    || y <= yScrollOffset - OBJECT_BORDER_Y1 || y >= yScrollOffset + OBJECT_BORDER_Y2) {
-                    active       = false;
-                    entity->type = OBJ_TYPE_BLANKOBJECT;
-                }
-                else {
-                    active = true;
-                }
-                break;
-            case PRIORITY_INACTIVE: active = false; break;
-            default: break;
-        }
+        bool active = CalcObjectActiveState(entity);
+
         if (active && entity->type > OBJ_TYPE_BLANKOBJECT) {
             ObjectScript *scriptInfo = &objectScriptList[entity->type];
             activePlayer             = 0;
@@ -103,7 +111,38 @@ void ProcessObjects()
     }
 }
 
-void ProcessPausedObjects()
+void ProcessSoftPausedObjects()
+{
+    for (int i = 0; i < DRAWLAYER_COUNT; ++i) drawListEntries[i].listSize = 0;
+
+    for (objectLoop = 0; objectLoop < ENTITY_COUNT; ++objectLoop) {
+        Entity *entity = &objectEntityList[objectLoop];
+        bool active    = CalcObjectActiveState(entity);
+
+        if (active && entity->type > OBJ_TYPE_BLANKOBJECT) {
+            ObjectScript *scriptInfo = &objectScriptList[entity->type];
+            activePlayer             = 0;
+
+            if (entity->priority == PRIORITY_ACTIVE_PAUSED) {
+                if (scriptData[scriptInfo->subMain.scriptCodePtr] > 0)
+                    ProcessScript(scriptInfo->subMain.scriptCodePtr, scriptInfo->subMain.jumpTablePtr, SUB_MAIN);
+                if (scriptData[scriptInfo->subPlayerInteraction.scriptCodePtr] > 0) {
+                    while (activePlayer < PLAYER_COUNT) {
+                        if (playerList[activePlayer].objectInteractions)
+                            ProcessScript(scriptInfo->subPlayerInteraction.scriptCodePtr, scriptInfo->subPlayerInteraction.jumpTablePtr,
+                                          SUB_PLAYERINTERACTION);
+                        ++activePlayer;
+                    }
+                }
+            }
+
+            if (entity->drawOrder < DRAWLAYER_COUNT)
+                drawListEntries[entity->drawOrder].entityRefs[drawListEntries[entity->drawOrder].listSize++] = objectLoop;
+        }
+    }
+}
+
+void ProcessHardPausedObjects()
 {
     for (int i = 0; i < DRAWLAYER_COUNT; ++i) drawListEntries[i].listSize = 0;
 

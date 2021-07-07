@@ -187,6 +187,7 @@ const char variableNames[][0x20] = {
     "Stage.Minutes",
     "Stage.ActNo",
     "Stage.PauseEnabled",
+    "Stage.SoftPauseEnabled",
     "Stage.ListSize",
     "Stage.NewXBoundary1",
     "Stage.NewXBoundary2",
@@ -450,6 +451,7 @@ AliasInfo aliases[0x80] = { AliasInfo("true", "1"),
                             AliasInfo("FACING_LEFT", "1"),
                             AliasInfo("FACING_RIGHT", "0"),
                             AliasInfo("STAGE_PAUSED", "2"),
+                            AliasInfo("STAGE_PAUSED_HARD", "3"),
                             AliasInfo("STAGE_RUNNING", "1"),
                             AliasInfo("RESET_GAME", "2"),
                             AliasInfo("RETRO_WIN", "0"),
@@ -602,6 +604,7 @@ enum ScrVariable {
     VAR_STAGEMINUTES,
     VAR_STAGEACTNO,
     VAR_STAGEPAUSEENABLED,
+    VAR_STAGESOFTPAUSEENABLED,
     VAR_STAGELISTSIZE,
     VAR_STAGENEWXBOUNDARY1,
     VAR_STAGENEWXBOUNDARY2,
@@ -2502,6 +2505,7 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptSub)
                     case VAR_STAGEMINUTES: scriptEng.operands[i] = stageMinutes; break;
                     case VAR_STAGEACTNO: scriptEng.operands[i] = actID; break;
                     case VAR_STAGEPAUSEENABLED: scriptEng.operands[i] = pauseEnabled; break;
+                    case VAR_STAGESOFTPAUSEENABLED: scriptEng.operands[i] = softPauseEnabled; break;
                     case VAR_STAGELISTSIZE: scriptEng.operands[i] = stageListCount[activeStageList]; break;
                     case VAR_STAGENEWXBOUNDARY1: scriptEng.operands[i] = newXBoundary1; break;
                     case VAR_STAGENEWXBOUNDARY2: scriptEng.operands[i] = newXBoundary2; break;
@@ -4226,6 +4230,7 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptSub)
                     case VAR_STAGEMINUTES: stageMinutes = scriptEng.operands[i]; break;
                     case VAR_STAGEACTNO: actID = scriptEng.operands[i]; break;
                     case VAR_STAGEPAUSEENABLED: pauseEnabled = scriptEng.operands[i]; break;
+                    case VAR_STAGESOFTPAUSEENABLED: softPauseEnabled = scriptEng.operands[i]; break;
                     case VAR_STAGELISTSIZE: break;
                     case VAR_STAGENEWXBOUNDARY1: newXBoundary1 = scriptEng.operands[i]; break;
                     case VAR_STAGENEWXBOUNDARY2: newXBoundary2 = scriptEng.operands[i]; break;

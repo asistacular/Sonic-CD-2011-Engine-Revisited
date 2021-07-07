@@ -45,13 +45,14 @@ int SCREEN_SCROLL_RIGHT = SCREEN_CENTERX + 8;
 int lastYSize = -1;
 int lastXSize = -1;
 
-bool pauseEnabled     = true;
-bool timeEnabled      = true;
-bool debugMode        = false;
+bool pauseEnabled       = true;
+bool softPauseEnabled   = true;
+bool timeEnabled        = true;
+bool debugMode          = false;
 int frameCounter        = 0;
-int stageMilliseconds = 0;
-int stageSeconds      = 0;
-int stageMinutes      = 0;
+int stageMilliseconds   = 0;
+int stageSeconds        = 0;
+int stageMinutes        = 0;
 
 // Category and Scene IDs
 int activeStageList   = 0;
@@ -134,6 +135,7 @@ void ProcessStage(void)
                 playerList[i].objectInteractions = true;
             }
             pauseEnabled      = false;
+            softPauseEnabled  = false;
             timeEnabled       = false;
             frameCounter      = 0;
             stageMilliseconds = 0;
@@ -202,7 +204,10 @@ void ProcessStage(void)
             CheckKeyDown(&keyDown, 0xFF);
             CheckKeyPress(&keyPress, 0xFF);
             if (pauseEnabled && keyPress.start) {
-                stageMode = STAGEMODE_PAUSED;
+                if (softPauseEnabled)
+                    stageMode = STAGEMODE_PAUSED;
+                else
+                    stageMode = STAGEMODE_PAUSED_HARD;
                 PauseSound();
             }
 
@@ -273,7 +278,48 @@ void ProcessStage(void)
 
             // Update
             for (int i = 0; i < updateMax; ++i) {
-                ProcessPausedObjects();
+                ProcessSoftPausedObjects();
+            }
+
+#if RETRO_HARDWARE_RENDER
+            gfxIndexSize        = 0;
+            gfxVertexSize       = 0;
+            gfxIndexSizeOpaque  = 0;
+            gfxVertexSizeOpaque = 0;
+#endif
+
+            if (pauseEnabled && keyPress.start) {
+                stageMode = STAGEMODE_NORMAL;
+                ResumeSound();
+            }
+
+            DrawStageGFX();
+            break;
+        case STAGEMODE_PAUSED_HARD:
+            drawStageGFXHQ = false;
+            if (fadeMode > 0)
+                fadeMode--;
+
+            if (paletteMode > 0) {
+                paletteMode = 0;
+                SetActivePalette(0, 0, 256);
+            }
+            lastXSize = -1;
+            lastYSize = -1;
+            CheckKeyDown(&keyDown, 0xFF);
+            CheckKeyPress(&keyPress, 0xFF);
+
+            updateMax = 1;
+            /*updateMax = Engine.renderFrameIndex;
+            if (Engine.refreshRate >= Engine.targetRefreshRate) {
+                updateMax = 0;
+                if (Engine.frameCount % Engine.skipFrameIndex < Engine.renderFrameIndex)
+                    updateMax = 1;
+            }*/
+
+            // Update
+            for (int i = 0; i < updateMax; ++i) {
+                ProcessHardPausedObjects();
             }
 
 #if RETRO_HARDWARE_RENDER

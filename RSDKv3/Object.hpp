@@ -51,8 +51,11 @@ extern const int OBJECT_BORDER_Y1;
 extern const int OBJECT_BORDER_Y2;
 
 void ProcessStartupObjects();
+bool CalcObjectActiveState(Entity *entity);
+
 void ProcessObjects();
-void ProcessPausedObjects();
+void ProcessSoftPausedObjects();
+void ProcessHardPausedObjects();
 
 void SetObjectTypeName(const char *objectName, int objectID);
 

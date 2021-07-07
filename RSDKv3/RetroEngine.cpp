@@ -615,9 +615,11 @@ void RetroEngine::Callback(int callbackID)
             stageMode = STAGEMODE_LOAD;
             break;
         case CALLBACK_EXIT_SELECTED:
-            // gameMode = ENGINE_EXITGAME;
             printLog("Callback: Exit Selected");
-            if (bytecodeMode == BYTECODE_PC) {
+            if (!usingBytecode) {
+                gameMode = ENGINE_EXITGAME;
+            }
+            else if (bytecodeMode == BYTECODE_PC) {
                 running = false;
             }
             else {
@@ -652,7 +654,11 @@ void RetroEngine::Callback(int callbackID)
             break;
         case CALLBACK_PAUSE_REQUESTED: // PC/Mobile = Pause Requested (Mobile uses in-game menu, PC does as well if devMenu is active)
             // I know this is kinda lazy and a copout, buuuuuuut the in-game menu is so much better than the janky PC one
-            stageMode = STAGEMODE_PAUSED;
+            if (softPauseEnabled)
+                stageMode = STAGEMODE_PAUSED;
+            else
+                stageMode = STAGEMODE_PAUSED_HARD;
+
             for (int o = 0; o < OBJECT_COUNT; ++o) {
                 if (StrComp("PauseMenu", typeNames[o])) {
                     objectEntityList[9].type      = o;

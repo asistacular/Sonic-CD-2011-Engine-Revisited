@@ -1451,7 +1451,8 @@ void DrawHLineScrollLayer(int layerID)
     if (activeTileLayers[layerID]) { // BG Layer
         int yScroll    = yScrollOffset * layer->parallaxFactor >> 8;
         int fullheight = layerheight << 7;
-        layer->scrollPos += layer->scrollSpeed;
+        if (stageMode != STAGEMODE_PAUSED)
+            layer->scrollPos += layer->scrollSpeed;
         if (layer->scrollPos > fullheight << 16)
             layer->scrollPos -= fullheight << 16;
         yscrollOffset    = (yScroll + (layer->scrollPos >> 16)) % fullheight;
@@ -1474,7 +1475,8 @@ void DrawHLineScrollLayer(int layerID)
             int fullLayerwidth = layerwidth << 7;
             for (int i = 0; i < hParallax.entryCount; ++i) {
                 hParallax.linePos[i] = xScrollOffset * hParallax.parallaxFactor[i] >> 8;
-                hParallax.scrollPos[i] += hParallax.scrollSpeed[i];
+                if (stageMode != STAGEMODE_PAUSED)
+                    hParallax.scrollPos[i] += hParallax.scrollSpeed[i];
                 if (hParallax.scrollPos[i] > fullLayerwidth << 16)
                     hParallax.scrollPos[i] -= fullLayerwidth << 16;
                 if (hParallax.scrollPos[i] < 0)
@@ -1509,9 +1511,9 @@ void DrawHLineScrollLayer(int layerID)
                 if (hParallax.deform[*scrollIndex])
                     deform = *deformationData;
 
-                // Fix for SS5 mobile bug
-                if (StrComp(stageList[activeStageList][stageListPosition].name, "5") && activeStageList == STAGELIST_SPECIAL)
-                    deform >>= 4;
+                // Fix for SS5 mobile bug (breaks PC version)
+                /*if (StrComp(stageList[activeStageList][stageListPosition].name, "5") && activeStageList == STAGELIST_SPECIAL)
+                    deform >>= 4;*/
 
                 chunkX += deform;
                 ++deformationData;
@@ -2802,7 +2804,8 @@ void DrawVLineScrollLayer(int layerID)
     if (activeTileLayers[layerID]) { // BG Layer
         int xScroll        = xScrollOffset * layer->parallaxFactor >> 8;
         int fullLayerwidth = layerwidth << 7;
-        layer->scrollPos += layer->scrollSpeed;
+        if (stageMode != STAGEMODE_PAUSED)
+            layer->scrollPos += layer->scrollSpeed;
         if (layer->scrollPos > fullLayerwidth << 16)
             layer->scrollPos -= fullLayerwidth << 16;
         xscrollOffset   = (xScroll + (layer->scrollPos >> 16)) % fullLayerwidth;
@@ -2824,7 +2827,8 @@ void DrawVLineScrollLayer(int layerID)
             int fullLayerheight = layerheight << 7;
             for (int i = 0; i < vParallax.entryCount; ++i) {
                 vParallax.linePos[i] = xScrollOffset * vParallax.parallaxFactor[i] >> 8;
-                vParallax.scrollPos[i] += vParallax.scrollSpeed[i];
+                if (stageMode != STAGEMODE_PAUSED)
+                    vParallax.scrollPos[i] += vParallax.scrollSpeed[i];
                 if (vParallax.scrollPos[i] > fullLayerheight << 16)
                     vParallax.scrollPos[i] -= fullLayerheight << 16;
                 if (vParallax.scrollPos[i] < 0)
