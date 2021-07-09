@@ -336,6 +336,7 @@ void ProcessStage(void)
             DrawObjectList(4);
             DrawObjectList(5);
             DrawObjectList(6);
+            DrawObjectList(7);
             if (pauseEnabled && keyPress.start) {
                 stageMode = STAGEMODE_NORMAL;
                 ResumeSound();

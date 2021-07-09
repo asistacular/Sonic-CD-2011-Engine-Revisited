@@ -1400,6 +1400,7 @@ void DrawStageGFX()
 
     DrawObjectList(5);
     DrawObjectList(6);
+    DrawObjectList(7);
 
 #if RETRO_SOFTWARE_RENDER
     if (drawStageGFXHQ) {
