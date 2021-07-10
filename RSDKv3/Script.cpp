@@ -187,7 +187,6 @@ const char variableNames[][0x20] = {
     "Stage.Minutes",
     "Stage.ActNo",
     "Stage.PauseEnabled",
-    "Stage.SoftPauseEnabled",
     "Stage.ListSize",
     "Stage.NewXBoundary1",
     "Stage.NewXBoundary2",
@@ -290,6 +289,7 @@ const char variableNames[][0x20] = {
     "Engine.TrialMode",
     "KeyPress.AnyStart",
     "Engine.HapticsEnabled",
+    "Stage.SoftPauseEnabled",
 };
 
 const FunctionInfo functions[] = { FunctionInfo("End", 0),
@@ -604,7 +604,6 @@ enum ScrVariable {
     VAR_STAGEMINUTES,
     VAR_STAGEACTNO,
     VAR_STAGEPAUSEENABLED,
-    VAR_STAGESOFTPAUSEENABLED,
     VAR_STAGELISTSIZE,
     VAR_STAGENEWXBOUNDARY1,
     VAR_STAGENEWXBOUNDARY2,
@@ -707,6 +706,7 @@ enum ScrVariable {
     VAR_ENGINETRIALMODE,
     VAR_KEYPRESSANYSTART,
     VAR_ENGINEHAPTICSENABLED,
+    VAR_STAGESOFTPAUSEENABLED,
     VAR_MAX_CNT
 };
 
@@ -2505,7 +2505,6 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptSub)
                     case VAR_STAGEMINUTES: scriptEng.operands[i] = stageMinutes; break;
                     case VAR_STAGEACTNO: scriptEng.operands[i] = actID; break;
                     case VAR_STAGEPAUSEENABLED: scriptEng.operands[i] = pauseEnabled; break;
-                    case VAR_STAGESOFTPAUSEENABLED: scriptEng.operands[i] = softPauseEnabled; break;
                     case VAR_STAGELISTSIZE: scriptEng.operands[i] = stageListCount[activeStageList]; break;
                     case VAR_STAGENEWXBOUNDARY1: scriptEng.operands[i] = newXBoundary1; break;
                     case VAR_STAGENEWXBOUNDARY2: scriptEng.operands[i] = newXBoundary2; break;
@@ -2613,6 +2612,7 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptSub)
 #if RETRO_USE_HAPTICS
                     case VAR_ENGINEHAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
+                    case VAR_STAGESOFTPAUSEENABLED: scriptEng.operands[i] = softPauseEnabled; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -4230,7 +4230,6 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptSub)
                     case VAR_STAGEMINUTES: stageMinutes = scriptEng.operands[i]; break;
                     case VAR_STAGEACTNO: actID = scriptEng.operands[i]; break;
                     case VAR_STAGEPAUSEENABLED: pauseEnabled = scriptEng.operands[i]; break;
-                    case VAR_STAGESOFTPAUSEENABLED: softPauseEnabled = scriptEng.operands[i]; break;
                     case VAR_STAGELISTSIZE: break;
                     case VAR_STAGENEWXBOUNDARY1: newXBoundary1 = scriptEng.operands[i]; break;
                     case VAR_STAGENEWXBOUNDARY2: newXBoundary2 = scriptEng.operands[i]; break;
@@ -4377,6 +4376,7 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptSub)
 #if RETRO_USE_HAPTICS
                     case VAR_ENGINEHAPTICSENABLED: break;
 #endif
+                    case VAR_STAGESOFTPAUSEENABLED: softPauseEnabled = scriptEng.operands[i]; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
