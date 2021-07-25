@@ -426,7 +426,9 @@ const FunctionInfo functions[] = { FunctionInfo("End", 0),
                              FunctionInfo("SetLeaderboard", 2),
                              FunctionInfo("LoadOnlineMenu", 1),
                              FunctionInfo("EngineCallback", 1),
-                             FunctionInfo("HapticEffect", 4) };
+                             FunctionInfo("HapticEffect", 4),
+                             FunctionInfo("SetTempPalette", 1),
+                             FunctionInfo("ClearTempPalette", 0) };
 
 AliasInfo aliases[0x80] = { AliasInfo("true", "1"),
                             AliasInfo("false", "0"),
@@ -846,6 +848,8 @@ enum ScrFunction {
     FUNC_LOADONLINEMENU,
     FUNC_ENGINECALLBACK,
     FUNC_HAPTICEFFECT,
+    FUNC_SETTEMPPALETTE,
+    FUNC_CLEARTEMPPALETTE,
     FUNC_MAX_CNT
 };
 
@@ -3774,6 +3778,14 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptSub)
                 QueueHapticEffect(scriptEng.operands[0]);
                 break;
 #endif
+            case FUNC_SETTEMPPALETTE:
+                opcodeSize = 0;
+                SetTempPalette(scriptEng.operands[0]);
+                break;
+            case FUNC_CLEARTEMPPALETTE:
+                opcodeSize = 0;
+                ClearTempPalette();
+                break;
         }
 
         // Set Values

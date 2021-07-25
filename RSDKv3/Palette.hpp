@@ -24,6 +24,7 @@ extern ushort *activePalette; // Ptr to the 256 colour set thats active
 extern PaletteEntry *activePalette32;
 
 extern byte gfxLineBuffer[SCREEN_YSIZE]; // Pointers to active palette
+extern byte tempLineBuffer[SCREEN_YSIZE]; // Pointers to temporary palette
 
 extern int fadeMode;
 extern byte fadeA;
@@ -31,6 +32,7 @@ extern byte fadeR;
 extern byte fadeG;
 extern byte fadeB;
 
+extern bool tempPaletteActive;
 extern int paletteMode;
 
 #if RETRO_HARDWARE_RENDER
@@ -63,6 +65,23 @@ inline void SetActivePalette(byte newActivePal, int startLine, int endLine)
         texPaletteNum = newActivePal;
 #endif
 }
+
+inline void SetTempPalette(byte newTempPal)
+{
+#if RETRO_SOFTWARE_RENDER
+    if (newTempPal < PALETTE_COUNT)
+        for (int l = 0; l < SCREEN_YSIZE; l++) tempLineBuffer[l] = newTempPal;
+#endif
+
+#if RETRO_HARDWARE_RENDER
+    if (newTempPal < PALETTE_COUNT)
+        texPaletteNum = newTempPal;
+#endif
+
+    tempPaletteActive = true;
+}
+
+inline void ClearTempPalette() { tempPaletteActive = false; }
 
 inline void SetPaletteEntry(byte paletteIndex, byte index, byte r, byte g, byte b)
 {

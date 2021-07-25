@@ -1490,7 +1490,7 @@ void DrawHLineScrollLayer(int layerID)
     }
 
     ushort *frameBufferPtr = Engine.frameBuffer;
-    byte *lineBuffer       = gfxLineBuffer;
+    byte *lineBuffer       = (tempPaletteActive) ? tempLineBuffer : gfxLineBuffer;
     int tileYPos           = yscrollOffset % (layerheight << 7);
     if (tileYPos < 0)
         tileYPos += layerheight << 7;
@@ -2843,8 +2843,8 @@ void DrawVLineScrollLayer(int layerID)
     }
 
     ushort *frameBufferPtr = Engine.frameBuffer;
-    activePalette          = fullPalette[gfxLineBuffer[0]];
-    activePalette32        = fullPalette32[gfxLineBuffer[0]];
+    activePalette          = (tempPaletteActive) ? fullPalette[tempLineBuffer[0]] : fullPalette[gfxLineBuffer[0]];
+    activePalette32        = (tempPaletteActive) ? fullPalette32[tempLineBuffer[0]] : fullPalette32[gfxLineBuffer[0]];
     int tileXPos           = xscrollOffset % (layerheight << 7);
     if (tileXPos < 0)
         tileXPos += layerheight << 7;
@@ -3309,7 +3309,7 @@ void Draw3DFloorLayer(int layerID)
     int layerZPos          = layer->ZPos;
     int sinValue           = sinM[layer->angle];
     int cosValue           = cosM[layer->angle];
-    byte *linePtr          = gfxLineBuffer;
+    byte *linePtr          = (tempPaletteActive) ? tempLineBuffer : gfxLineBuffer;
     ushort *frameBufferPtr = &Engine.frameBuffer[((SCREEN_YSIZE / 2) + 12) * SCREEN_XSIZE];
     int layerXPos          = layer->XPos >> 4;
     int ZBuffer            = layerZPos >> 4;
@@ -3890,7 +3890,7 @@ void Draw3DSkyLayer(int layerID)
     ushort *bufferPtr      = Engine.frameBuffer2x;
     if (!drawStageGFXHQ)
         bufferPtr = &Engine.frameBuffer[((SCREEN_YSIZE / 2) + 12) * SCREEN_XSIZE];
-    byte *linePtr = &gfxLineBuffer[((SCREEN_YSIZE / 2) + 12)];
+    byte *linePtr = (tempPaletteActive) ? &tempLineBuffer[((SCREEN_YSIZE / 2) + 12)] : & gfxLineBuffer[((SCREEN_YSIZE / 2) + 12)];
     int layerXPos = layer->XPos >> 4;
     int layerZPos = layer->ZPos >> 4;
     for (int i = TILE_SIZE / 2; i < SCREEN_YSIZE - TILE_SIZE; ++i) {
@@ -4262,7 +4262,7 @@ void DrawSprite(int XPos, int YPos, int width, int height, int sprX, int sprY, i
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = SCREEN_XSIZE - width;
     int gfxPitch           = surface->width - width;
-    byte *lineBuffer       = &gfxLineBuffer[YPos];
+    byte *lineBuffer       = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
     byte *gfxDataPtr       = &graphicData[sprX + surface->width * sprY + surface->dataPosition];
     ushort *frameBufferPtr = &Engine.frameBuffer[XPos + SCREEN_XSIZE * YPos];
     while (height--) {
@@ -4366,7 +4366,7 @@ void DrawSpriteFlipped(int XPos, int YPos, int width, int height, int sprX, int 
         case FLIP_NONE:
             pitch          = SCREEN_XSIZE - width;
             gfxPitch       = surface->width - width;
-            lineBuffer     = &gfxLineBuffer[YPos];
+            lineBuffer     = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
             gfxData        = &graphicData[sprX + surface->width * sprY + surface->dataPosition];
             frameBufferPtr = &Engine.frameBuffer[XPos + SCREEN_XSIZE * YPos];
 
@@ -4388,7 +4388,7 @@ void DrawSpriteFlipped(int XPos, int YPos, int width, int height, int sprX, int 
         case FLIP_X:
             pitch          = SCREEN_XSIZE - width;
             gfxPitch       = width + surface->width;
-            lineBuffer     = &gfxLineBuffer[YPos];
+            lineBuffer     = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
             gfxData        = &graphicData[widthFlip - 1 + sprX + surface->width * sprY + surface->dataPosition];
             frameBufferPtr = &Engine.frameBuffer[XPos + SCREEN_XSIZE * YPos];
             while (height--) {
@@ -4409,8 +4409,8 @@ void DrawSpriteFlipped(int XPos, int YPos, int width, int height, int sprX, int 
         case FLIP_Y:
             pitch          = SCREEN_XSIZE - width;
             gfxPitch       = width + surface->width;
-            lineBuffer     = &gfxLineBuffer[YPos];
-            gfxData        = &gfxLineBuffer[YPos];
+            lineBuffer     = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
+            gfxData        = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
             gfxData        = &graphicData[sprX + surface->width * (sprY + heightFlip - 1) + surface->dataPosition];
             frameBufferPtr = &Engine.frameBuffer[XPos + SCREEN_XSIZE * YPos];
             while (height--) {
@@ -4431,7 +4431,7 @@ void DrawSpriteFlipped(int XPos, int YPos, int width, int height, int sprX, int 
         case FLIP_XY:
             pitch          = SCREEN_XSIZE - width;
             gfxPitch       = surface->width - width;
-            lineBuffer     = &gfxLineBuffer[YPos];
+            lineBuffer     = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
             gfxData        = &graphicData[widthFlip - 1 + sprX + surface->width * (sprY + heightFlip - 1) + surface->dataPosition];
             frameBufferPtr = &Engine.frameBuffer[XPos + SCREEN_XSIZE * YPos];
             while (height--) {
@@ -4676,7 +4676,7 @@ void DrawSpriteScaled(int direction, int XPos, int YPos, int pivotX, int pivotY,
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = SCREEN_XSIZE - width;
     int gfxwidth           = surface->width;
-    byte *lineBuffer       = &gfxLineBuffer[trueYPos];
+    byte *lineBuffer       = (tempPaletteActive) ? &tempLineBuffer[trueYPos] : &gfxLineBuffer[trueYPos];
     byte *gfxData          = &graphicData[sprX + surface->width * sprY + surface->dataPosition];
     ushort *frameBufferPtr = &Engine.frameBuffer[trueXPos + SCREEN_XSIZE * trueYPos];
     if (direction == FLIP_X) {
@@ -4931,7 +4931,7 @@ void DrawSpriteRotated(int direction, int XPos, int YPos, int pivotX, int pivotY
     int pitch              = SCREEN_XSIZE - maxX;
     int lineSize           = surface->widthShifted;
     ushort *frameBufferPtr = &Engine.frameBuffer[left + SCREEN_XSIZE * top];
-    byte *lineBuffer       = &gfxLineBuffer[top];
+    byte *lineBuffer       = (tempPaletteActive) ? &tempLineBuffer[top] : &gfxLineBuffer[top];
     int startX             = left - XPos;
     int startY             = top - YPos;
     int shiftPivot         = (sprX << 9) - 1;
@@ -5202,7 +5202,7 @@ void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivot
     int pitch              = SCREEN_XSIZE - maxX;
     int lineSize           = surface->widthShifted;
     ushort *frameBufferPtr = &Engine.frameBuffer[left + SCREEN_XSIZE * top];
-    byte *lineBuffer       = &gfxLineBuffer[top];
+    byte *lineBuffer       = (tempPaletteActive) ? &tempLineBuffer[top] : &gfxLineBuffer[top];
     int startX             = left - XPos;
     int startY             = top - YPos;
     int shiftPivot         = (sprX << 9) - 1;
@@ -5405,7 +5405,7 @@ void DrawBlendedSprite(int XPos, int YPos, int width, int height, int sprX, int 
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = SCREEN_XSIZE - width;
     int gfxPitch           = surface->width - width;
-    byte *lineBuffer       = &gfxLineBuffer[YPos];
+    byte *lineBuffer       = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
     byte *gfxData          = &graphicData[sprX + surface->width * sprY + surface->dataPosition];
     ushort *frameBufferPtr = &Engine.frameBuffer[XPos + SCREEN_XSIZE * YPos];
     while (height--) {
@@ -5501,7 +5501,7 @@ void DrawAlphaBlendedSprite(int XPos, int YPos, int width, int height, int sprX,
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = SCREEN_XSIZE - width;
     int gfxPitch           = surface->width - width;
-    byte *lineBuffer       = &gfxLineBuffer[YPos];
+    byte *lineBuffer       = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
     byte *gfxData          = &graphicData[sprX + surface->width * sprY + surface->dataPosition];
     ushort *frameBufferPtr = &Engine.frameBuffer[XPos + SCREEN_XSIZE * YPos];
     if (alpha == 0xFF) {
@@ -5618,7 +5618,7 @@ void DrawAdditiveBlendedSprite(int XPos, int YPos, int width, int height, int sp
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = SCREEN_XSIZE - width;
     int gfxPitch           = surface->width - width;
-    byte *lineBuffer       = &gfxLineBuffer[YPos];
+    byte *lineBuffer       = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
     byte *gfxData          = &graphicData[sprX + surface->width * sprY + surface->dataPosition];
     ushort *frameBufferPtr = &Engine.frameBuffer[XPos + SCREEN_XSIZE * YPos];
 
@@ -5732,7 +5732,7 @@ void DrawSubtractiveBlendedSprite(int XPos, int YPos, int width, int height, int
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = SCREEN_XSIZE - width;
     int gfxPitch           = surface->width - width;
-    byte *lineBuffer       = &gfxLineBuffer[YPos];
+    byte *lineBuffer       = (tempPaletteActive) ? &tempLineBuffer[YPos] : &gfxLineBuffer[YPos];
     byte *gfxData          = &graphicData[sprX + surface->width * sprY + surface->dataPosition];
     ushort *frameBufferPtr = &Engine.frameBuffer[XPos + SCREEN_XSIZE * YPos];
 
@@ -6170,7 +6170,7 @@ void DrawTexturedFace(void *v, byte sheetID)
     ushort *frameBufferPtr = &Engine.frameBuffer[SCREEN_XSIZE * faceTop];
     byte *sheetPtr         = &graphicData[gfxSurface[sheetID].dataPosition];
     int shiftwidth         = gfxSurface[sheetID].widthShifted;
-    byte *lineBuffer       = &gfxLineBuffer[faceTop];
+    byte *lineBuffer       = (tempPaletteActive) ? &tempLineBuffer[faceTop] : &gfxLineBuffer[faceTop];
     while (faceTop < faceBottom) {
         activePalette   = fullPalette[*lineBuffer];
         activePalette32 = fullPalette32[*lineBuffer];

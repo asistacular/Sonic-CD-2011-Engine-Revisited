@@ -9,6 +9,7 @@ ushort fullPalette[PALETTE_COUNT][PALETTE_SIZE];
 ushort *activePalette = fullPalette[0]; // Ptr to the 256 colour set thats active
 
 byte gfxLineBuffer[SCREEN_YSIZE]; // Pointers to active palette
+byte tempLineBuffer[SCREEN_YSIZE]; // Pointers to temporary palette
 
 int fadeMode = 0;
 byte fadeA   = 0;
@@ -16,6 +17,7 @@ byte fadeR   = 0;
 byte fadeG   = 0;
 byte fadeB   = 0;
 
+bool tempPaletteActive = false;
 int paletteMode = 0;
 
 #if RETRO_HARDWARE_RENDER
