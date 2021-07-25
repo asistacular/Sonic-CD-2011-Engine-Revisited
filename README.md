@@ -17,9 +17,10 @@ Just like the original decompilation that this project is based on, it will not 
 ### Partially Completed
 + Enhance pause functionality to allow for animations directly over paused gameplay without artifacts
   * Introduced soft/hard pause modes and a script variable to enable/disable soft pause functionality on a per-stage basis
+  * Implemented SetTempPalette and ClearTempPalette script functionality
   * Disabled fixed-speed horizontal and vertical parallax updates while soft paused
   * However, soft pause doesn't prevent objects from updating when state-altering code is present in an object's ObjectDraw function. This can also include parallax, deformation, and animated tile effects on BG and FG tiles. Objects that do so must be manually hunted down and corrected (ugh).
-  * To Do: Create additional script functionality (SetTempPalette, ClearTempPalette, ObjectAnimate default function) while maintaining compatibility with existing scripts
+  * To Do: Create additional script functionality (ObjectAnimate default function) while maintaining compatibility with existing scripts
 ### Planned
 + Ability to detect, switch between, and use keyboard/physical and mouse/touch controls on all platforms
 + Reduction of reliance on engine callbacks for some common operations
