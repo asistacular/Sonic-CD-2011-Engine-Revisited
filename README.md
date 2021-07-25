@@ -1,5 +1,5 @@
 # Sonic CD 2011 Engine Revisited (RSDKv3)
-### A fork of [Rubberduckycooly's Sonic CD 2011 Decompilation](https://github.com/Rubberduckycooly/Sonic-CD-2011-Script-Decompilation)
+### A fork of [Rubberduckycooly's Sonic CD 2011 Decompilation](https://github.com/Rubberduckycooly/Sonic-CD-11-Decompilation)
 &nbsp;
 
 ## Please support the official releases!
@@ -15,16 +15,18 @@ Just like the original decompilation that this project is based on, it will not 
 ### Completed
 + None (yet!)
 ### Partially Completed
-+ Enhance pause functionality to allow for non-janky animations directly over paused gameplay
++ Enhance pause functionality to allow for animations directly over paused gameplay without artifacts
   * Introduced soft/hard pause modes and a script variable to enable/disable soft pause functionality on a per-stage basis
   * Disabled fixed-speed horizontal and vertical parallax updates while soft paused
-  * However, soft pause doesn't prevent objects from updating when state-altering code is present in an object's ObjectDraw function. This can also include parallax and deformation effects on BG and FG tiles. Objects that do so must be manually hunted down and corrected (ugh).
+  * However, soft pause doesn't prevent objects from updating when state-altering code is present in an object's ObjectDraw function. This can also include parallax, deformation, and animated tile effects on BG and FG tiles. Objects that do so must be manually hunted down and corrected (ugh).
+  * To Do: Create additional script functionality (SetTempPalette, ClearTempPalette, ObjectAnimate default function) while maintaining compatibility with existing scripts
 ### Planned
 + Ability to detect, switch between, and use keyboard/physical and mouse/touch controls on all platforms
 + Reduction of reliance on engine callbacks for some common operations
 + Elimination of accommodations for outdated platforms (WP7, anyone?)
 + Elimination of unnecessary code for trial/demo versions, GDPR/age gates, etc.
 + Where necessary/possible, changes to support merging standard/mobile script sections
++ Addition of `#Screen_Std` and `#Screen_Wide` preprocessor directives to partially replace `#Standard` and `#Mobile` directives
 + Ability to port completed changes to the RSDKv4 decompilation
 ### Possible
 + Manual updating of fixed-speed parallax effects via scripting and a script variable to enable/disable it
@@ -32,7 +34,7 @@ Just like the original decompilation that this project is based on, it will not 
 + Android Studio project for building an Android version of the project
 
 ## Building a working executable:
-These instructions were copied from the original repository and slightly modified for this project. If you encounter difficulties, please view the Readme file on the original repository [here](https://github.com/Rubberduckycooly/Sonic-CD-2011-Script-Decompilation) in case changes were made there and pushed to this forked repository without an update to this Readme.
+These instructions were copied from the original repository and slightly modified for this project. If you encounter difficulties, please view the Readme file on the original repository [here](https://github.com/Rubberduckycooly/Sonic-CD-11-Decompilation) in case changes were made there and pushed to this forked repository without an update to this Readme.
 
 ### Windows:
 * Clone the repo, follow the instructions in the [dependencies readme for Windows](./dependencies/windows/dependencies.txt) to setup dependencies, then build via the provided Visual Studio solution.
